@@ -22,18 +22,6 @@ public abstract class View<V, P> : MonoBehaviour
         }
     }
 
-    public virtual bool Visible
-    {
-        get
-        {
-            return gameObject.activeSelf;
-        }
-        set
-        {
-            gameObject.SetActive(value);
-        }
-    }
-
     protected virtual void OnDestroy()
     {
         if (presenter != null)

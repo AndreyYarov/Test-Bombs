@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 using UniRx;
 
 using Object = UnityEngine.Object;
@@ -10,6 +11,17 @@ public abstract class Presenter<V, P>
     where V : View<V, P>
     where P : Presenter<V, P>, new()
 {
+    private static RectTransform uiParent;
+    protected static RectTransform UIParent
+    {
+        get
+        {
+            if (!uiParent)
+                uiParent = Object.FindObjectOfType<Canvas>().transform as RectTransform;
+            return uiParent;
+        }
+    }
+
     private class TypeInfo
     {
         public readonly MethodInfo Start, Update, OnDestroy;
@@ -47,37 +59,9 @@ public abstract class Presenter<V, P>
         }
     }
 
-    protected static P FindPresenter()
-    {
-        return Object.FindObjectOfType<V>().Presenter;
-    }
-
     public void SetView(V view)
     {
         this.view = view;
-    }
-
-    private CompositeDisposable coroutines = new CompositeDisposable();
-    protected IDisposable StartCoroutine(IEnumerator routine)
-    {
-        var c = routine.ToObservable().Subscribe();
-        c.AddTo(coroutines);
-        return c;
-    }
-
-    protected void StopCoroutine(IDisposable routine)
-    {
-        if (coroutines.Contains(routine))
-        {
-            coroutines.Remove(routine);
-            routine.Dispose();
-        }
-    }
-
-    protected void StopAllCoroutines()
-    {
-        coroutines.Dispose();
-        coroutines = new CompositeDisposable();
     }
 
     private IDisposable updateLoop, startLoop;
@@ -113,7 +97,6 @@ public abstract class Presenter<V, P>
             startLoop.Dispose();
         if (updateLoop != null)
             updateLoop.Dispose();
-        StopAllCoroutines();
         if (view)
             Object.Destroy(view.gameObject);
     }
