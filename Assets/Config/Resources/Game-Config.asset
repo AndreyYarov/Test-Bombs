@@ -13,9 +13,60 @@ MonoBehaviour:
   m_Name: Game-Config
   m_EditorClassIdentifier: 
   npcTemplates:
-  - prefab: {fileID: 0}
-    health: 100
-    count: 5
+  - count: 3
     time: 0
-    spawnDelay: 3
+    spawnDelay: 2.5
+    prefab: {fileID: 5441497140219214574, guid: a076ba60c065c5341bf4435fc317e507,
+      type: 3}
+    health: 100
     speed: 2
+  - count: 6
+    time: 0.5
+    spawnDelay: 2.5
+    prefab: {fileID: 5441497140219214574, guid: ce6856e79cec24146a9da9295e65f090,
+      type: 3}
+    health: 100
+    speed: 2
+  - count: 3
+    time: 1
+    spawnDelay: 2.5
+    prefab: {fileID: 5441497140219214574, guid: d479d910694a4dd4e87cdc2c1a1a4c4c,
+      type: 3}
+    health: 100
+    speed: 2
+  - count: 4
+    time: 1.5
+    spawnDelay: 3
+    prefab: {fileID: 5441497140219214574, guid: 0b2361004e05dd04db89e05f74f9c451,
+      type: 3}
+    health: 100
+    speed: 2
+  - count: 5
+    time: 2
+    spawnDelay: 2.5
+    prefab: {fileID: 5441497140219214574, guid: 68df451931905794c9dd2c1186610017,
+      type: 3}
+    health: 100
+    speed: 2
+  bombTemplates:
+  - count: 0
+    time: 0
+    spawnDelay: 2
+    prefab: {fileID: 9206846762855861286, guid: ed41a28b241f68941bdd563c609f4971,
+      type: 3}
+    damage: 150
+    radius: 3
+  - count: 0
+    time: 0.3
+    spawnDelay: 1.2
+    prefab: {fileID: 9206846762855861286, guid: 5a14f5aada05e3442ad27b900e8d8548,
+      type: 3}
+    damage: 100
+    radius: 2
+  - count: 0
+    time: 0.6
+    spawnDelay: 0.7
+    prefab: {fileID: 9206846762855861286, guid: 20241f15365e38d4e989df19d397daff,
+      type: 3}
+    damage: 50
+    radius: 1

@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UniRx;
 
-public class NpcHealth : MonoBehaviour
+public class NpcHealth : PlayModeBehaviour
 {
     private Collider npcCollider;
     private float health;
@@ -13,14 +12,34 @@ public class NpcHealth : MonoBehaviour
         npcCollider = GetComponent<Collider>();
     }
 
-    private void Reset()
-    {
-        if (!Application.isPlaying)
-            DestroyImmediate(this);
-    }
-
     public void Init(int health)
     {
         this.health = health;
+    }
+
+    private void GetDamage(DamageMessage msg)
+    {
+        float sqrDistance = Vector3.SqrMagnitude(npcCollider.ClosestPoint(msg.center) - msg.center);
+        float sqrRadius = msg.radius * msg.radius;
+        if (sqrDistance < sqrRadius)
+        {
+            float damage = msg.damage * (1f - sqrDistance / sqrRadius);
+            if (damage > health)
+                damage = health;
+            health -= damage;
+            Debug.Log($"{name} get damage {damage}");
+        }
+    }
+
+    public CompositeDisposable disposables;
+    void OnEnable()
+    {
+        disposables = new CompositeDisposable();
+        MessageBroker.Default.Receive<DamageMessage>().Subscribe(msg => GetDamage(msg)).AddTo(disposables);
+    }
+    void OnDisable()
+    { 
+        if (disposables != null)
+            disposables.Dispose();
     }
 }

@@ -1,10 +1,23 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
     [SerializeField] private float walkAreaSize;
+    [SerializeField] private float bombAreaSize;
+    [SerializeField] private float bombSpawnY;
+
+    private static GameController game;
+    public static GameController Game => game;
+
+    public static float WalkAreaSize => game.walkAreaSize;
+    public static float BombAreaSize => game.bombAreaSize;
+    public static float BombSpawnY => game.bombSpawnY;
+
+    private void Awake()
+    {
+        game = this;
+    }
 
     private void Start()
     {
@@ -15,30 +28,44 @@ public class GameController : MonoBehaviour
             return;
         }
         for (int i = 0; i < config.npcTemplateCount; i++)
-            StartCoroutine(SpawnNPCs(config.GetNpcTemplate(i)));
+            StartCoroutine(Spawn<NpcPipeline, NpcTemplate>(config.GetNpcTemplate(i)));
+        for (int i = 0; i < config.bombTemplateCount; i++)
+            StartCoroutine(Spawn<BombPipeline, BombTemplate>(config.GetBombTemplate(i)));
     }
 
-    private IEnumerator SpawnNPCs(NpcTemplate template)
+    private IEnumerator Spawn<P, T>(T template)
+        where P : EntityPipeline<P, T>, new()
+        where T : Template
     {
-        for (int i = 0; i < template.Count || template.Count == 0; i++)
+        if (template.ReadyForSpawn())
         {
-            float delay = i == 0 ? template.Time : template.SpawnDelay;
-            while (delay > 0)
+            float delay = template.Time;
+            for (int i = 0; i < template.Count || template.Count == 0; i++, delay += template.SpawnDelay)
             {
-                yield return null;
-                delay -= Time.deltaTime;
+                while (delay > 0)
+                {
+                    yield return null;
+                    delay -= Time.deltaTime;
+                }
+                P pipeline = EntityPipeline<P, T>.Create(template);
+                StartCoroutine(pipeline.Run());
             }
-            NpcPipeline pipeline = new NpcPipeline(template.Prefab, template.Health, walkAreaSize, template.Speed);
-            StartCoroutine(pipeline.Run());
         }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(1f, 1f, 0.5f, 0.75f);
-        Gizmos.DrawCube(Vector3.up * 0.1f, new Vector3(walkAreaSize * 2, 0f, walkAreaSize * 2));
+        Gizmos.DrawCube(Vector3.up * 0.05f, new Vector3(walkAreaSize * 2, 0f, walkAreaSize * 2));
 
         Gizmos.color = new Color(1f, 1f, 0.5f, 1f);
-        Gizmos.DrawWireCube(Vector3.up * 0.1f, new Vector3(walkAreaSize * 2, 0f, walkAreaSize * 2));
+        Gizmos.DrawWireCube(Vector3.up * 0.05f, new Vector3(walkAreaSize * 2, 0f, walkAreaSize * 2));
+
+
+        Gizmos.color = new Color(1f, 0f, 0f, 0.75f);
+        Gizmos.DrawCube(Vector3.up * bombSpawnY, new Vector3(bombAreaSize * 2, 0f, bombAreaSize * 2));
+
+        Gizmos.color = new Color(0.8f, 0f, 0f, 1f);
+        Gizmos.DrawWireCube(Vector3.up * bombSpawnY, new Vector3(bombAreaSize * 2, 0f, bombAreaSize * 2));
     }
 }

@@ -1,33 +1,23 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class NpcPipeline
+public class NpcPipeline : EntityPipeline<NpcPipeline, NpcTemplate>
 {
-    private NpcController prefab;
-    private int health;
-    private float walkAreaSize;
-    private float speed;
+    public NpcPipeline() { }
 
-    public NpcPipeline(NpcController prefab, int health, float walkAreaSize, float speed)
+    public override IEnumerator Run()
     {
-        this.prefab = prefab;
-        this.walkAreaSize = walkAreaSize;
-        this.health = health;
-        this.speed = speed;
-    }
-
-    public IEnumerator Run()
-    {
-        var npc = GameObject.Instantiate(prefab);
-        npc.Walk(walkAreaSize, speed);
+        var npc = Object.Instantiate(Template.Prefab);
+        npc.Walk(GameController.WalkAreaSize, Template.Speed);
 
         var npcHealth = npc.gameObject.AddComponent<NpcHealth>();
-        npcHealth.Init(health);
+        npcHealth.Init(Template.Health);
 
         while (npcHealth.Health > 0)
             yield return null;
 
         yield return new WaitForSeconds(0.5f);
-        GameObject.Destroy(npc.gameObject);
+        Debug.Log($"{npc.name} damaged");
+        Object.Destroy(npc.gameObject);
     }
 }
