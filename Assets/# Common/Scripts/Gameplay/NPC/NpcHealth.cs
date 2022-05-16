@@ -4,8 +4,9 @@ using UniRx;
 public class NpcHealth : PlayModeBehaviour
 {
     private Collider npcCollider;
-    private float health;
+    private float health, maxHealth;
     public float Health => health;
+    private HealthBar healthBar;
 
     private void Awake()
     {
@@ -14,7 +15,9 @@ public class NpcHealth : PlayModeBehaviour
 
     public void Init(int health)
     {
-        this.health = health;
+        maxHealth = this.health = health;
+        healthBar = HealthBar.Create(transform);
+        healthBar.SetHealth(maxHealth, maxHealth, false);
     }
 
     private void GetDamage(DamageMessage msg)
@@ -27,7 +30,7 @@ public class NpcHealth : PlayModeBehaviour
             if (damage > health)
                 damage = health;
             health -= damage;
-            Debug.Log($"{name} get damage {damage}");
+            healthBar.SetHealth(health, maxHealth, true);
         }
     }
 
@@ -41,5 +44,11 @@ public class NpcHealth : PlayModeBehaviour
     { 
         if (disposables != null)
             disposables.Dispose();
+    }
+
+    private void OnDestroy()
+    {
+        if (healthBar != null)
+            healthBar.Destroy();
     }
 }

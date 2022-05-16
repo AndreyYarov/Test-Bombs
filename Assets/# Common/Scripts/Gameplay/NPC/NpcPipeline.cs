@@ -17,7 +17,6 @@ public class NpcPipeline : EntityPipeline<NpcPipeline, NpcTemplate>
             yield return null;
 
         yield return new WaitForSeconds(0.5f);
-        Debug.Log($"{npc.name} damaged");
         Object.Destroy(npc.gameObject);
     }
 }
