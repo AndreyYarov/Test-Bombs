@@ -15,6 +15,9 @@ public class NpcTemplate
     [SerializeField, Min(0), Tooltip("Count of spawned NPCs\nZero is infinity")]
     private int count;
 
+    [SerializeField, Min(0f), Tooltip("Delay between start of game and first spawn")]
+    private float time;
+
     [SerializeField, Min(0f), Tooltip("Delay between NPCs spawn in seconds\nNot 0 if count is infinity")]
     private float spawnDelay;
 
@@ -24,6 +27,7 @@ public class NpcTemplate
     public NpcController Prefab => prefab;
     public int Health => health;
     public int Count => count;
+    public float Time => time;
     public float SpawnDelay => spawnDelay;
     public float Speed => speed;
     public bool ReadyForSpawn => prefab && (count > 0 || spawnDelay > 0f);
